@@ -1,0 +1,7 @@
+name "euclid-core-d"
+description "Experimental internal shared Euclidean contracts for geo-d and geo3-d"
+authors "Alexander Bernardi"
+copyright "Copyright © 2026 Alexander Bernardi"
+license "MIT"
+targetType "library"
+sourcePaths "source"

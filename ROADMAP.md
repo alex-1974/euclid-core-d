@@ -22,12 +22,40 @@ Before tagging `v0.1.0`:
 - [x] document the narrow shared-contract scope;
 - [x] add and run repository CI;
 - [x] verify a repository-local external consumer of the shared modules;
-- [ ] verify `geo-d` against the release candidate;
-- [ ] verify `geo3-d` against the release candidate;
-- [ ] verify simultaneous `geo` / `geo3` use with one resolved Core instance;
-- [ ] verify the seven shared declaration identities across both siblings;
-- [ ] make the package available to DUB consumers;
-- [ ] tag `v0.1.0`.
+- [x] verify `geo-d` against the release candidate;
+- [x] verify `geo3-d` against the release candidate;
+- [x] verify simultaneous `geo` / `geo3` use with one resolved Core instance;
+- [x] verify the seven shared declaration identities across both siblings;
+- [ ] tag `v0.1.0`;
+- [ ] make the package available to DUB consumers.
+
+## Release-candidate evidence
+
+The cross-repository release-candidate verification used these exact revisions:
+
+- `geo-d`: `e19aa1accc16f9ec74d31f0e2c071b53ac74c6d4`
+- `geo3-d`: `78debd9922a306d39949b90c38f1ce24d282859b`
+- `euclid-core-d`: `b1f03e5a11ee6fb35def3b68eb94d3286815b796`
+
+The verified family consumer established that:
+
+- both dimensional sibling libraries build and test against the same Core
+  release candidate with DMD and LDC;
+- simultaneous `import geo; import geo3;` succeeds;
+- DUB resolves one `euclid-core-d` source instance for the family consumer;
+- all seven admitted shared contracts have one common D declaration identity;
+- dimension-specific overload families such as `distance` coexist correctly;
+- both sibling repositories can be consumed directly from Git at their exact
+  verified revisions.
+
+The validated Core candidate was
+`b1f03e5a11ee6fb35def3b68eb94d3286815b796`. Release-finalization changes after
+that verification are documentation-only and do not alter the library source
+or public contracts.
+
+The remaining release-packaging transition is from the temporary local
+`path=` dependencies in the sibling manifests to a normal versioned
+`euclid-core-d` dependency after `v0.1.0` is published through DUB.
 
 ## Toward v1.0.0
 

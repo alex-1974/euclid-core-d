@@ -1,7 +1,11 @@
 name "euclid-core-d"
-description "Experimental internal shared Euclidean contracts for geo-d and geo3-d"
+description "Shared Euclidean contracts for geo-d and geo3-d"
+homepage "https://github.com/alex-1974/euclid-core-d"
 authors "Alexander Bernardi"
 copyright "Copyright © 2026 Alexander Bernardi"
 license "MIT"
+
+toolchainRequirements frontend=">=2.111.0"
+
 targetType "library"
 sourcePaths "source"

@@ -13,6 +13,8 @@ The project follows Semantic Versioning for published releases.
 - Defined the package scope as declaration-identity support rather than a third
   consumer-facing geometry API.
 - Added release, contribution, security, licensing, and CI project metadata.
+- Added a repository-local external consumer test for the seven shared
+  contracts.
 
 ## [0.1.0] - Unreleased
 

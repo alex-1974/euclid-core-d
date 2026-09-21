@@ -45,6 +45,12 @@ jobs:
         shell: bash
         run: dub test --compiler="$DC" --force
 
+      - name: Run external consumer
+        shell: bash
+        run: |
+          cd tests/consumer
+          dub run --compiler="$DC" --force
+
       - name: Build release configuration
         shell: bash
         run: dub build --build=release --compiler="$DC" --force

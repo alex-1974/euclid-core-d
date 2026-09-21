@@ -20,7 +20,7 @@ Before tagging `v0.1.0`:
 - [x] verify release builds with DMD and LDC;
 - [x] document independent Semantic Versioning;
 - [x] document the narrow shared-contract scope;
-- [ ] add and run repository CI;
+- [x] add and run repository CI;
 - [x] verify a repository-local external consumer of the shared modules;
 - [ ] verify `geo-d` against the release candidate;
 - [ ] verify `geo3-d` against the release candidate;

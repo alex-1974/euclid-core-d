@@ -1,0 +1,10 @@
+name "euclid-core-d-consumer-test"
+description "External consumer verification for euclid-core-d"
+license "MIT"
+
+targetType "executable"
+targetPath "../../.dub/consumer"
+
+dependency "euclid-core-d" path="../.."
+
+toolchainRequirements frontend=">=2.111.0"

@@ -35,9 +35,12 @@ euclid_core.simplification
 The package may also own narrowly scoped internal implementation primitives
 when both dimensional siblings require the same dimension-neutral numerical
 semantics. These live below `euclid_core.internal` and are not consumer-facing
-API. The first such primitive is `euclid_core.internal.metric.metricHypot`, a
-Phobos 2.111 compatibility shim that delegates directly to Phobos from
-frontend 2.112 onward.
+API. Current metric primitives are:
+
+- `euclid_core.internal.metric.metricHypot`, a Phobos 2.111 compatibility
+  shim that delegates directly to Phobos from frontend 2.112 onward;
+- `euclid_core.internal.metric.metricScalbn`, a zero-preserving wrapper that
+  delegates every non-zero value to Phobos/runtime `scalbn`.
 
 Dimension-bearing geometry types and algorithms do not belong here.
 
@@ -118,11 +121,12 @@ dub build --build=release --compiler=ldc2 --force
 
 ## Status
 
-The current release target is `v0.1.1`.
+The current release target is `v0.1.2`.
 
-`v0.1.0` was tagged on 2026-09-21. `v0.1.1` adds the shared internal
-`metricHypot` compatibility primitive and the corresponding Core-scope
-clarification.
+`v0.1.1` is published through DUB and provides the shared internal
+`metricHypot` compatibility primitive. `v0.1.2` adds the shared internal
+`metricScalbn` zero-preservation primitive required by both dimensional
+siblings.
 
 The package is publicly hosted because `geo-d` and `geo3-d` require an
 independently versioned dependency. Its primary consumers remain those two

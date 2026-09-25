@@ -167,14 +167,16 @@ The package is ready for downstream adoption only after this resolves
 
 ## 6. Downstream handoff
 
-After registry verification, notify the existing project-owned issues:
+After registry verification:
 
-- `geo-d` issue #24;
-- `geo3-d` issue #25.
+- notify the existing `geo-d` issue #24 and `geo3-d` issue #25 that
+  `metricHypot` remains available in the new Core release;
+- open dedicated `metricScalbn` adoption issues in both `geo-d` and
+  `geo3-d`, as required by Core issue #7.
 
-Those projects own their respective dependency update, call-site replacement,
-regression tests, and release decisions. No such code changes belong in this
-repository.
+The sibling projects own their respective dependency update, call-site
+replacement, regression tests, and release decisions. No such code changes
+belong in this repository.
 
 ## Release completion criteria
 

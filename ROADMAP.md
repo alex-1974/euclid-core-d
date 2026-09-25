@@ -10,6 +10,25 @@ justified either by a concrete common declaration-identity requirement or by
 a dimension-neutral internal primitive that both siblings require for the same
 correct numerical semantics.
 
+## v0.1.2 — zero-preserving metric scaling
+
+Release goal: make the validated shared `metricScalbn` implementation
+available as a versioned Core dependency before downstream 2D/3D adoption.
+
+Release preparation:
+
+- [x] merge the validated `metricScalbn` implementation to `main`;
+- [x] validate the controlled six-compiler matrix;
+- [x] prepare the `v0.1.2` changelog and release runbook;
+- [ ] merge the release-metadata PR;
+- [ ] create annotated tag `v0.1.2` on the resulting `main` commit;
+- [ ] push the tag to GitHub;
+- [ ] verify registry resolution of `euclid-core-d@0.1.2`;
+- [ ] hand off `metricHypot` + `metricScalbn` adoption to `geo-d` and
+  `geo3-d`.
+
+Existing release tags must not be moved.
+
 ## v0.1.1 — Phobos 2.111 metric compatibility
 
 Release goal: make the validated shared `metricHypot` implementation available
@@ -21,12 +40,12 @@ Release preparation:
 - [x] merge the validated `metricHypot` implementation and ADR to `main`;
 - [x] validate the controlled six-compiler matrix;
 - [x] prepare the `v0.1.1` changelog and release runbook;
-- [ ] merge the release-metadata PR;
-- [ ] create annotated tag `v0.1.1` on the resulting `main` commit;
-- [ ] push the tag to GitHub;
-- [ ] register or refresh `euclid-core-d` in the public DUB registry;
-- [ ] verify registry resolution of `euclid-core-d@0.1.1`;
-- [ ] hand off versioned adoption to the `geo-d` and `geo3-d` project issues.
+- [x] merge the release-metadata PR;
+- [x] create annotated tag `v0.1.1` on the resulting `main` commit;
+- [x] push the tag to GitHub;
+- [x] register or refresh `euclid-core-d` in the public DUB registry;
+- [x] verify registry resolution of `euclid-core-d@0.1.1`;
+- [x] open versioned adoption issues in `geo-d` and `geo3-d`.
 
 The existing `v0.1.0` tag must not be moved.
 
@@ -52,8 +71,7 @@ Completed:
 - [x] verify the seven shared declaration identities across both siblings;
 - [x] tag `v0.1.0`.
 
-Public DUB-registry availability is carried forward to the `v0.1.1` release
-process so the first registry publication includes the current Core fix.
+Public DUB-registry publication was completed with `v0.1.1`.
 
 ## Release-candidate evidence
 

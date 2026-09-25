@@ -118,7 +118,11 @@ dub build --build=release --compiler=ldc2 --force
 
 ## Status
 
-The current release target is `v0.1.0`.
+The current release target is `v0.1.1`.
+
+`v0.1.0` was tagged on 2026-09-21. `v0.1.1` adds the shared internal
+`metricHypot` compatibility primitive and the corresponding Core-scope
+clarification.
 
 The package is publicly hosted because `geo-d` and `geo3-d` require an
 independently versioned dependency. Its primary consumers remain those two

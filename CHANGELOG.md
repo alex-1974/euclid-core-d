@@ -6,20 +6,50 @@ The project follows Semantic Versioning for published releases.
 
 ## [Unreleased]
 
+No unreleased changes.
+
+## [0.1.1] - 2026-09-25
+
+Patch release adding the shared Phobos 2.111 metric compatibility primitive
+required by both dimensional sibling libraries.
+
 ### Added
 
-- Added internal `euclid_core.internal.metric.metricHypot` for the Phobos 2.111
-  two-argument `hypot` tiny-operand correctness defect. The workaround is
-  frontend-version guarded and delegates directly to Phobos from 2.112 onward.
-- Expanded CI to the controlled DMD 2.111/2.112/2.113 and LDC
-  1.41/1.42/1.43 compiler matrix.
+- Added internal `euclid_core.internal.metric.metricHypot` for the Phobos
+  2.111 two-argument `hypot` tiny-operand correctness defect.
+- Added ADR 0001 documenting admission of shared dimension-neutral internal
+  implementation primitives when both dimensional siblings require identical
+  numerical semantics.
 
 ### Changed
 
-- Clarified Core scope to admit dimension-neutral internal implementation
-  primitives when both dimensional siblings require identical numerical
-  semantics and centralization gives a concrete correctness, consistency, or
-  maintenance benefit.
+- Scoped the compatibility workaround to frontend/Phobos 2.111 with
+  `static if (__VERSION__ == 2111)`; frontend 2.112 and later delegate
+  directly to Phobos.
+- Expanded CI to the controlled DMD 2.111/2.112/2.113 and LDC
+  1.41/1.42/1.43 compiler matrix.
+- Clarified Core scope to include narrowly scoped internal numerical
+  infrastructure in addition to shared declaration-identity contracts.
+
+### Validation
+
+The implementation candidate passed unit tests, the repository-local external
+consumer, and release builds on:
+
+- DMD 2.111.0
+- DMD 2.112.1
+- DMD 2.113.0
+- LDC 1.41.0
+- LDC 1.42.0
+- LDC 1.43.0
+
+The implementation was merged by PR #5 at:
+
+```text
+c9fd4b2f5eca46a4d0170b0de915b8e1481380a9
+```
+
+Downstream adoption remains owned by the respective sibling projects.
 
 ## [0.1.0] - 2026-09-21
 

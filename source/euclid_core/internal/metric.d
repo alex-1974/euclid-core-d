@@ -40,13 +40,15 @@ if (isFloatingPoint!T)
         /*
          * Phobos 2.111 performs its negligible-component test only after
          * scaling tiny operands. Returning the scaled u from that test loses
-         * the inverse scale. Keep the compatibility logic isolated to the
-         * affected frontend/Phobos line.
+         * the inverse scale.
          *
-         * NOTE: this predicate is intentionally kept aligned with corrected
-         * Phobos ordering; the 2.111 regression matrix is authoritative.
+         * Use the equivalent ratio form here instead of u * epsilon > v.
+         * For the smallest subnormal, u * epsilon itself underflows to zero;
+         * v / u remains representable (and is exactly zero for an
+         * axis-aligned magnitude), so the 2.111 defect is intercepted before
+         * entering Phobos.
          */
-        if (u * T.epsilon > v)
+        if (u != 0 && v / u < T.epsilon)
             return u;
     }
 

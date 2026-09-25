@@ -6,7 +6,9 @@ Prepare `euclid-core-d` as the independently versioned shared-contract
 dependency for `geo-d` and `geo3-d`.
 
 The package is intentionally small. Expansion is consumer-driven and must be
-justified by a concrete common declaration-identity requirement.
+justified either by a concrete common declaration-identity requirement or by
+a dimension-neutral internal primitive that both siblings require for the same
+correct numerical semantics.
 
 ## v0.1.0 — Initial public development release
 
@@ -76,12 +78,18 @@ No additional geometry functionality is required merely to reach `v1.0.0`.
 
 ## Future expansion
 
-A new declaration may enter `euclid-core-d` only when:
+A new public contract may enter `euclid-core-d` only when:
 
 1. it is dimension-neutral;
 2. both `geo-d` and `geo3-d` have concrete need for the contract;
 3. common D declaration identity is required for correct coexistence; and
 4. the extraction preserves the independence of the dimensional libraries.
+
+A dimension-neutral internal implementation primitive may enter Core when
+both siblings concretely require identical semantics and centralization gives
+a correctness, numerical-consistency, or maintenance benefit. Such a primitive
+must remain internal infrastructure and must not become a generic
+N-dimensional geometry abstraction.
 
 Convenience, implementation reuse, or aesthetic symmetry alone are not
 sufficient.

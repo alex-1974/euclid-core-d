@@ -2,17 +2,39 @@
 
 ## Current objective
 
-Prepare `euclid-core-d` as the independently versioned shared-contract
-dependency for `geo-d` and `geo3-d`.
+Prepare `euclid-core-d` as the independently versioned shared Core dependency
+for `geo-d` and `geo3-d`.
 
 The package is intentionally small. Expansion is consumer-driven and must be
 justified either by a concrete common declaration-identity requirement or by
 a dimension-neutral internal primitive that both siblings require for the same
 correct numerical semantics.
 
+## v0.1.1 — Phobos 2.111 metric compatibility
+
+Release goal: make the validated shared `metricHypot` implementation available
+as a versioned Core dependency without performing downstream code changes from
+this repository.
+
+Release preparation:
+
+- [x] merge the validated `metricHypot` implementation and ADR to `main`;
+- [x] validate the controlled six-compiler matrix;
+- [x] prepare the `v0.1.1` changelog and release runbook;
+- [ ] merge the release-metadata PR;
+- [ ] create annotated tag `v0.1.1` on the resulting `main` commit;
+- [ ] push the tag to GitHub;
+- [ ] register or refresh `euclid-core-d` in the public DUB registry;
+- [ ] verify registry resolution of `euclid-core-d@0.1.1`;
+- [ ] hand off versioned adoption to the `geo-d` and `geo3-d` project issues.
+
+The existing `v0.1.0` tag must not be moved.
+
 ## v0.1.0 — Initial public development release
 
-Before tagging `v0.1.0`:
+The initial public release established the independently versioned Core package.
+
+Completed:
 
 - [x] establish the repository as an independent Git repository;
 - [x] publish the repository independently on GitHub;
@@ -28,12 +50,15 @@ Before tagging `v0.1.0`:
 - [x] verify `geo3-d` against the release candidate;
 - [x] verify simultaneous `geo` / `geo3` use with one resolved Core instance;
 - [x] verify the seven shared declaration identities across both siblings;
-- [ ] tag `v0.1.0`;
-- [ ] make the package available to DUB consumers.
+- [x] tag `v0.1.0`.
+
+Public DUB-registry availability is carried forward to the `v0.1.1` release
+process so the first registry publication includes the current Core fix.
 
 ## Release-candidate evidence
 
-The cross-repository release-candidate verification used these exact revisions:
+The original cross-repository `v0.1.0` release-candidate verification used
+these exact revisions:
 
 - `geo-d`: `e19aa1accc16f9ec74d31f0e2c071b53ac74c6d4`
 - `geo3-d`: `78debd9922a306d39949b90c38f1ce24d282859b`
@@ -50,27 +75,19 @@ The verified family consumer established that:
 - both sibling repositories can be consumed directly from Git at their exact
   verified revisions.
 
-The validated Core candidate was
-`b1f03e5a11ee6fb35def3b68eb94d3286815b796`. Release-finalization changes after
-that verification are documentation-only and do not alter the library source
-or public contracts.
-
-The remaining release-packaging transition is from the temporary local
-`path=` dependencies in the sibling manifests to a normal versioned
-`euclid-core-d` dependency after `v0.1.0` is published through DUB.
-
 ## Toward v1.0.0
 
 `v1.0.0` will establish the first stable compatibility baseline of the shared
-contracts.
+contracts and internal Core infrastructure.
 
 Before that freeze:
 
-- the independent package must have been exercised by both dimensional
-  siblings;
+- the independently published package must have been exercised by both
+  dimensional siblings;
 - cross-repository coexistence must be durable and reproducible;
 - release packaging must no longer depend on the workspace directory layout;
-- the seven admitted contracts and their observable semantics must be audited;
+- the admitted contracts and their observable semantics must be audited;
+- shared internal primitives must remain narrowly justified and internal;
 - there must be no speculative dimension-neutral API added merely for reuse or
   symmetry.
 

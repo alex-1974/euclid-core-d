@@ -1,6 +1,7 @@
 module euclid_core.internal.metric;
 
 import std.math.algebraic : hypot;
+import std.math.exponential : scalbn;
 import std.traits : isFloatingPoint;
 
 /**
@@ -53,6 +54,30 @@ if (isFloatingPoint!T)
     }
 
     return hypot(x, y);
+}
+
+/**
+ * Zero-preserving power-of-two scaling shared by geo-d and geo3-d.
+ *
+ * LDC's runtime ldexp implementation currently treats an exponent-field
+ * value of zero as a subnormal input without first excluding signed zero.
+ * For sufficiently large positive exponents, that can turn +/-0 into a
+ * non-zero value. Zero scaled by any finite integer power of two is exactly
+ * zero, so intercept it before delegating all non-zero values to scalbn.
+ *
+ * Returning value rather than T(0) preserves the sign bit of -0.
+ *
+ * This module is implementation infrastructure. metricScalbn is not part of
+ * the application-level geometry API and must not be re-exported by geo or
+ * geo3.
+ */
+T metricScalbn(T)(const T value, const int exponent) @safe pure nothrow @nogc
+if (isFloatingPoint!T)
+{
+    if (value == T(0))
+        return value;
+
+    return scalbn(value, exponent);
 }
 
 @safe pure nothrow @nogc unittest
@@ -117,4 +142,83 @@ if (isFloatingPoint!T)
     enum double smallest = 0x1p-1074;
     enum double tinyAxis = metricHypot(smallest, 0.0);
     static assert(tinyAxis == smallest);
+}
+
+
+@safe pure nothrow @nogc unittest
+{
+    import std.math.traits : isIdentical, isNaN;
+
+    double positiveZero = 0.0;
+    double negativeZero = -0.0;
+
+    // Exact runtime regression for the LDC zero-input ldexp defect.
+    assert(isIdentical(metricScalbn(positiveZero, 1074), 0.0));
+    assert(isIdentical(metricScalbn(negativeZero, 1074), -0.0));
+
+    // Zero is exact for scaling in either exponent direction.
+    assert(isIdentical(metricScalbn(positiveZero, -1074), 0.0));
+    assert(isIdentical(metricScalbn(negativeZero, -1074), -0.0));
+
+    // Non-zero finite values continue to use the native scalbn semantics.
+    assert(metricScalbn(1.5, 10) == scalbn(1.5, 10));
+    assert(metricScalbn(-1.5, -10) == scalbn(-1.5, -10));
+
+    enum double smallest = 0x1p-1074;
+    assert(metricScalbn(smallest, 1074) == scalbn(smallest, 1074));
+    assert(metricScalbn(smallest, 1074) == 1.0);
+
+    // Special non-zero values are delegated unchanged.
+    assert(
+        metricScalbn(double.infinity, 37) ==
+        scalbn(double.infinity, 37)
+    );
+    assert(
+        metricScalbn(-double.infinity, -37) ==
+        scalbn(-double.infinity, -37)
+    );
+    assert(metricScalbn(double.nan, 42).isNaN);
+}
+
+@safe pure nothrow @nogc unittest
+{
+    import std.math.traits : isIdentical;
+
+    float positiveZero = 0.0f;
+    float negativeZero = -0.0f;
+
+    assert(isIdentical(metricScalbn(positiveZero, 149), 0.0f));
+    assert(isIdentical(metricScalbn(negativeZero, 149), -0.0f));
+    assert(isIdentical(metricScalbn(positiveZero, -149), 0.0f));
+    assert(isIdentical(metricScalbn(negativeZero, -149), -0.0f));
+
+    assert(metricScalbn(1.5f, 10) == scalbn(1.5f, 10));
+}
+
+@safe pure nothrow @nogc unittest
+{
+    import std.math.traits : isIdentical;
+
+    real positiveZero = 0.0L;
+    real negativeZero = -0.0L;
+
+    assert(isIdentical(metricScalbn(positiveZero, 1074), 0.0L));
+    assert(isIdentical(metricScalbn(negativeZero, 1074), -0.0L));
+    assert(isIdentical(metricScalbn(positiveZero, -1074), 0.0L));
+    assert(isIdentical(metricScalbn(negativeZero, -1074), -0.0L));
+
+    assert(metricScalbn(1.5L, 10) == scalbn(1.5L, 10));
+}
+
+@safe pure nothrow @nogc unittest
+{
+    import std.math.traits : isIdentical;
+
+    enum double positiveZero = metricScalbn(0.0, 1074);
+    enum double negativeZero = metricScalbn(-0.0, 1074);
+    enum double scaled = metricScalbn(1.5, 4);
+
+    static assert(isIdentical(positiveZero, 0.0));
+    static assert(isIdentical(negativeZero, -0.0));
+    static assert(scaled == 24.0);
 }

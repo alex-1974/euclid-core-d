@@ -1,16 +1,14 @@
 module euclid_core.internal.metric;
 
 import std.math.algebraic : hypot;
-import std.math.traits : isNaN;
 import std.traits : isFloatingPoint;
 
 /**
  * Internal metric helper shared by geo-d and geo3-d.
  *
- * Provides the corrected Phobos 2.112 ordering for the negligible-component
- * case before delegating to std.math.algebraic.hypot. This preserves tiny
- * axis-aligned magnitudes on the supported Phobos 2.111 floor, where hypot
- * otherwise scales the operands before returning the larger one.
+ * On frontend/Phobos 2.111 this works around the known two-argument hypot
+ * defect for tiny operands. Starting with Phobos 2.112, metricHypot delegates
+ * directly so later Phobos numerical fixes remain authoritative.
  *
  * This module is implementation infrastructure. It is not part of the
  * application-level geometry API and must not be re-exported by geo or geo3.
@@ -18,29 +16,39 @@ import std.traits : isFloatingPoint;
 T metricHypot(T)(const T x, const T y) @safe pure nothrow @nogc
 if (isFloatingPoint!T)
 {
-    import core.math : fabs;
-
-    T u = fabs(x);
-    T v = fabs(y);
-
-    // Match corrected Phobos operand ordering and special-value semantics.
-    if (!(u >= v))
+    static if (__VERSION__ == 2111)
     {
-        v = u;
-        u = fabs(y);
+        import core.math : fabs;
+        import std.math.traits : isNaN;
 
-        if (u == T.infinity)
+        T u = fabs(x);
+        T v = fabs(y);
+
+        if (!(u >= v))
+        {
+            v = u;
+            u = fabs(y);
+
+            if (u == T.infinity)
+                return u;
+            if (v == T.infinity)
+                return v;
+            if (u.isNaN || v.isNaN)
+                return T.nan;
+        }
+
+        /*
+         * Phobos 2.111 performs its negligible-component test only after
+         * scaling tiny operands. Returning the scaled u from that test loses
+         * the inverse scale. Keep the compatibility logic isolated to the
+         * affected frontend/Phobos line.
+         *
+         * NOTE: this predicate is intentionally kept aligned with corrected
+         * Phobos ordering; the 2.111 regression matrix is authoritative.
+         */
+        if (u * T.epsilon > v)
             return u;
-        if (v == T.infinity)
-            return v;
-        if (u.isNaN || v.isNaN)
-            return T.nan;
     }
-
-    // Phobos 2.111 performs this test after tiny-value scaling. Moving it
-    // before the delegated hypot call backports the corrected 2.112 ordering.
-    if (u * T.epsilon > v)
-        return u;
 
     return hypot(x, y);
 }
@@ -57,7 +65,6 @@ if (isFloatingPoint!T)
     assert(isIdentical(metricHypot(-smallest, 0.0), smallest));
     assert(isIdentical(metricHypot(smallest, -0.0), smallest));
 
-    // Ordinary and special-value semantics must match corrected Phobos.
     assert(isIdentical(metricHypot(0.0, 0.0), 0.0));
     assert(metricHypot(3.0, 4.0) == 5.0);
     assert(metricHypot(double.infinity, 1.0) == double.infinity);
@@ -68,22 +75,18 @@ if (isFloatingPoint!T)
     assert(metricHypot(1.0, double.nan).isNaN);
     assert(metricHypot(double.nan, double.nan).isNaN);
 
-    // The strict comparison is intentional. At equality the second component
-    // is not negligible and the call must still reach Phobos hypot.
     enum double u = 1.0;
     enum double below = double.epsilon / 2.0;
     enum double boundary = double.epsilon;
     assert(isIdentical(metricHypot(u, below), u));
     assert(metricHypot(u, boundary) >= u);
 
-    // Comparable subnormals must not be collapsed to the larger operand.
     const double pair = metricHypot(smallest, smallest);
     assert(pair > smallest);
 }
 
 @safe pure nothrow @nogc unittest
 {
-    // Exercise the compatibility path for binary32 as well.
     enum float smallest = float.min_normal * float.epsilon;
     assert(metricHypot(smallest, 0.0f) == smallest);
     assert(metricHypot(0.0f, smallest) == smallest);
@@ -97,7 +100,6 @@ if (isFloatingPoint!T)
 
 @safe pure nothrow @nogc unittest
 {
-    // real uses the platform's native real format; avoid assuming its width.
     enum real smallest = real.min_normal * real.epsilon;
     assert(metricHypot(smallest, 0.0L) == smallest);
     assert(metricHypot(0.0L, smallest) == smallest);
@@ -105,7 +107,6 @@ if (isFloatingPoint!T)
 
 @safe pure nothrow @nogc unittest
 {
-    // CTFE must remain available to consumers.
     enum double h = metricHypot(3.0, 4.0);
     static assert(h == 5.0);
 

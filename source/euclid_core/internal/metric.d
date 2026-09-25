@@ -83,8 +83,10 @@ if (isFloatingPoint!T)
     assert(isIdentical(metricHypot(u, below), u));
     assert(metricHypot(u, boundary) >= u);
 
+    // sqrt(2) * smallest lies below the halfway point to the next binary64
+    // subnormal, so correct round-to-nearest remains exactly smallest.
     const double pair = metricHypot(smallest, smallest);
-    assert(pair > smallest);
+    assert(isIdentical(pair, smallest));
 }
 
 @safe pure nothrow @nogc unittest

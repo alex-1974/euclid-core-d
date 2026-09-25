@@ -6,7 +6,20 @@ The project follows Semantic Versioning for published releases.
 
 ## [Unreleased]
 
-No unreleased changes.
+### Added
+
+- Added internal `euclid_core.internal.metric.metricHypot` for the Phobos 2.111
+  two-argument `hypot` tiny-operand correctness defect. The workaround is
+  frontend-version guarded and delegates directly to Phobos from 2.112 onward.
+- Expanded CI to the controlled DMD 2.111/2.112/2.113 and LDC
+  1.41/1.42/1.43 compiler matrix.
+
+### Changed
+
+- Clarified Core scope to admit dimension-neutral internal implementation
+  primitives when both dimensional siblings require identical numerical
+  semantics and centralization gives a concrete correctness, consistency, or
+  maintenance benefit.
 
 ## [0.1.0] - 2026-09-21
 

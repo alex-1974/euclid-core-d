@@ -4,19 +4,20 @@ This document defines the release procedure for the independently versioned
 Core package. Downstream code changes in `geo-d` or `geo3-d` are not part of
 this procedure.
 
-## v0.1.1 release candidate
+## v0.1.2 release candidate
 
 Purpose:
 
-- publish the shared `euclid_core.internal.metric.metricHypot` compatibility
-  primitive;
-- preserve the existing `v0.1.0` tag unchanged;
-- make Core consumable as a normal versioned DUB dependency.
+- publish the shared `euclid_core.internal.metric.metricScalbn`
+  zero-preservation primitive;
+- preserve the existing `v0.1.0` and `v0.1.1` tags unchanged;
+- make the corrected Core implementation consumable as a numbered DUB
+  dependency.
 
-The implementation was merged to `main` by PR #5 at:
+The implementation was merged to `main` by PR #8 at:
 
 ```text
-c9fd4b2f5eca46a4d0170b0de915b8e1481380a9
+71730dd706110aacf80907e2c41c0c85db483f0b
 ```
 
 The release tag must point to the final `main` commit after the release
@@ -24,7 +25,7 @@ metadata PR is merged, not directly to the implementation merge commit above.
 
 ## 1. Merge the release metadata
 
-Merge the `release/v0.1.1` PR only after its CI matrix is green.
+Merge the `release/v0.1.2` PR only after its CI matrix is green.
 
 Then update the local checkout:
 
@@ -68,28 +69,28 @@ ldc-1.43.0
 
 ## 3. Create the annotated release tag
 
-Do not move or replace `v0.1.0`.
+Do not move or replace `v0.1.0` or `v0.1.1`.
 
-Create `v0.1.1` on the exact release commit:
+Create `v0.1.2` on the exact release commit:
 
 ```bash
-git tag -a v0.1.1 "$RELEASE_COMMIT" -m "euclid-core-d v0.1.1"
-git show --no-patch --decorate v0.1.1
-git rev-parse v0.1.1^{commit}
-test "$(git rev-parse v0.1.1^{commit})" = "$RELEASE_COMMIT"
+git tag -a v0.1.2 "$RELEASE_COMMIT" -m "euclid-core-d v0.1.2"
+git show --no-patch --decorate v0.1.2
+git rev-parse v0.1.2^{commit}
+test "$(git rev-parse v0.1.2^{commit})" = "$RELEASE_COMMIT"
 ```
 
 Push only after the verification succeeds:
 
 ```bash
-git push origin v0.1.1
+git push origin v0.1.2
 ```
 
 ## 4. Register or refresh the DUB package
 
 The public DUB registry derives numbered package releases from SemVer Git tags.
 Repository registration is a one-time operation; after registration, a new
-`v0.1.1` tag is sufficient for the registry to discover the version.
+`v0.1.2` tag is sufficient for the registry to discover the version.
 
 First check whether the package is already registered:
 
@@ -133,7 +134,7 @@ Clear stale package metadata if necessary and fetch the exact release:
 
 ```bash
 dub clean-caches
-dub fetch euclid-core-d@0.1.1 --cache=local
+dub fetch euclid-core-d@0.1.2 --cache=local
 ```
 
 Then perform a clean consumer smoke test in a temporary directory:
@@ -143,14 +144,18 @@ tmp="$(mktemp -d)"
 cd "$tmp"
 dub init euclid-core-smoke --type=executable --format=sdl
 cd euclid-core-smoke
-dub add euclid-core-d@0.1.1
+dub add euclid-core-d@0.1.2
 
 cat > source/app.d <<'EOF'
-import euclid_core.internal.metric : metricHypot;
+import euclid_core.internal.metric : metricHypot, metricScalbn;
+import std.math.traits : isIdentical;
 
 void main()
 {
     assert(metricHypot(3.0, 4.0) == 5.0);
+
+    double z = -0.0;
+    assert(isIdentical(metricScalbn(z, 1074), -0.0));
 }
 EOF
 
@@ -158,26 +163,28 @@ dub run --compiler=dmd
 ```
 
 The package is ready for downstream adoption only after this resolves
-`euclid-core-d 0.1.1` from the registry rather than a local path override.
+`euclid-core-d 0.1.2` from the registry rather than a local path override.
 
 ## 6. Downstream handoff
 
-After registry verification, notify the existing project-owned issues:
+After registry verification:
 
-- `geo-d` issue #24;
-- `geo3-d` issue #25.
+- notify the existing `geo-d` issue #24 and `geo3-d` issue #25 that
+  `metricHypot` remains available in the new Core release;
+- open dedicated `metricScalbn` adoption issues in both `geo-d` and
+  `geo3-d`, as required by Core issue #7.
 
-Those projects own their respective dependency update, call-site replacement,
-regression tests, and release decisions. No such code changes belong in this
-repository.
+The sibling projects own their respective dependency update, call-site
+replacement, regression tests, and release decisions. No such code changes
+belong in this repository.
 
 ## Release completion criteria
 
-`v0.1.1` is complete when:
+`v0.1.2` is complete when:
 
 - the release-metadata PR is merged;
 - CI is green on the controlled six-compiler matrix;
-- annotated tag `v0.1.1` points to the intended `main` commit;
+- annotated tag `v0.1.2` points to the intended `main` commit;
 - the tag is pushed to GitHub;
-- the DUB registry exposes version `0.1.1`;
+- the DUB registry exposes version `0.1.2`;
 - a clean external consumer resolves and runs against the registry package.

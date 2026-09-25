@@ -8,6 +8,44 @@ The project follows Semantic Versioning for published releases.
 
 No unreleased changes.
 
+## [0.1.2] - 2026-09-25
+
+Patch release adding a shared zero-preserving power-of-two scaling primitive
+for the dimensional Euclidean siblings.
+
+### Added
+
+- Added internal `euclid_core.internal.metric.metricScalbn`.
+- The helper preserves `+0.0` and `-0.0` exactly before delegating all
+  non-zero values to Phobos/runtime `scalbn`.
+- Added runtime and CTFE regression coverage for signed zero, ordinary finite
+  values, infinities, NaN, and `float` / `double` / `real`.
+
+### Fixed
+
+- Avoided the LDC runtime `ldexp` defect that can turn zero into a non-zero
+  value for sufficiently large positive exponents.
+
+### Validation
+
+The implementation passed unit tests, the repository-local external consumer,
+and release builds on:
+
+- DMD 2.111.0
+- DMD 2.112.1
+- DMD 2.113.0
+- LDC 1.41.0
+- LDC 1.42.0
+- LDC 1.43.0
+
+The implementation was merged by PR #8 at:
+
+```text
+71730dd706110aacf80907e2c41c0c85db483f0b
+```
+
+Downstream adoption remains owned by the respective sibling projects.
+
 ## [0.1.1] - 2026-09-25
 
 Patch release adding the shared Phobos 2.111 metric compatibility primitive

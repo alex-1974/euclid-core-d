@@ -1,18 +1,19 @@
 # euclid-core-d
 
-`euclid-core-d` is the independently versioned shared-contract package used by
+`euclid-core-d` is the independently versioned shared Core package used by
 the `geo-d` and `geo3-d` Euclidean geometry libraries.
 
-It exists for one narrow reason: some dimension-neutral public contracts must
+It exists for two narrow reasons: some dimension-neutral public contracts must
 have one D declaration identity when `geo` and `geo3` are used in the same
-program.
+program, and some dimension-neutral internal implementation primitives must
+provide identical numerical semantics to both dimensional siblings.
 
 It is not a third general-purpose geometry library. Normal geometry consumers
 should use `geo-d` for 2D geometry or `geo3-d` for 3D geometry.
 
 ## Scope
 
-The package currently owns exactly these shared contracts:
+The package currently owns these shared public contracts:
 
 - `isGeoScalar`
 - `MetricScalar`
@@ -30,6 +31,13 @@ euclid_core.intersection
 euclid_core.ring_validation
 euclid_core.simplification
 ```
+
+The package may also own narrowly scoped internal implementation primitives
+when both dimensional siblings require the same dimension-neutral numerical
+semantics. These live below `euclid_core.internal` and are not consumer-facing
+API. The first such primitive is `euclid_core.internal.metric.metricHypot`, a
+Phobos 2.111 compatibility shim that delegates directly to Phobos from
+frontend 2.112 onward.
 
 Dimension-bearing geometry types and algorithms do not belong here.
 
@@ -51,15 +59,20 @@ The dependency direction is:
 `geo-d` and `geo3-d` are independent sibling packages. Neither depends on the
 other.
 
-A declaration is admitted to `euclid-core-d` only when all of these conditions
-hold:
+A shared public contract is admitted to `euclid-core-d` only when all of these
+conditions hold:
 
 1. the contract is dimension-neutral;
 2. both dimensional siblings genuinely require it;
 3. correct simultaneous use requires one common D declaration identity; and
 4. moving it here does not introduce a generic N-dimensional geometry model.
 
-Code reuse or aesthetic API symmetry alone is not sufficient.
+An internal implementation primitive may also be admitted when it is
+dimension-neutral, both siblings have a concrete need for the same semantics,
+and centralizing it provides a correctness, numerical-consistency, or
+maintenance benefit without creating generic N-dimensional geometry.
+
+Code reuse, convenience, or aesthetic API symmetry alone is not sufficient.
 
 ## Versioning
 

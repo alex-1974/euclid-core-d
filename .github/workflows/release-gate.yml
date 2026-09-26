@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   compiler-gate:
-    name: ${{ matrix.compiler }}
+    name: Release / ${{ matrix.compiler }}
     runs-on: ubuntu-24.04
 
     strategy:
